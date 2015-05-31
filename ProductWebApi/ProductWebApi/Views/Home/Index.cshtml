@@ -1,0 +1,163 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="~/Scripts/vanilla-ck.js"></script>
+<script src="~/Scripts/vanilla.js"></script>
+<script src="@Url.Content("~/Scripts/knockout-2.1.0.debug.js")" type="text/javascript"></script>
+
+
+<script type="text/javascript">
+    function GetAllProducts() {
+        jQuery.support.cors = true;
+        $.ajax({
+            url: 'http://localhost:49958/api/Products',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                WriteResponse(data);
+            },
+            error: function (x, y, z) {
+                alert(x + '\n' + y + '\n' + z);
+            }
+        });
+    }
+
+    function AddProduct() {
+        jQuery.support.cors = true;
+        var employee = {
+            ID: $('#txtaddProid').val(),
+            Name: $('#txtaddProdName').val(),
+            Category: $('#txtaddProdCat').val(),
+            Price: $('#txtaddProdPrice').val()
+        };
+
+        $.ajax({
+            url: 'http://localhost:49958/api/Products/',
+            type: 'POST',
+            data: JSON.stringify(employee),
+            contentType: "application/json;charset=utf-8",
+            success: function (data) {
+                var msg = 'Product inserted successfully !'
+                $("#divResult").html(msg);
+            },
+            error: function (x, y, z) {
+                alert(x + '\n' + y + '\n' + z);
+                $("#divResult").html(' ');
+            }
+        });
+    }
+
+    function DeleteProduct() {
+        jQuery.support.cors = true;
+        var id = $('#txtdelEmpId').val()
+        $.ajax({
+            url: 'http://localhost:49958/api/Products/' + id,
+            type: 'DELETE',
+            contentType: "application/json;charset=utf-8",
+            success: function (data) {
+                var msg = 'Product deleted successfully !' + data.val;
+                $("#divResult").html(msg);
+            },
+            error: function (x, y, z) {
+                alert(x + '\n' + y + '\n' + z);
+                $("#divResult").html(' ');
+            }
+        });
+    }
+
+    function WriteResponse(employees) {
+        var strResult = "<table><th> Product ID </th><th> Name </th><th> Category </th><th> Price </th>";
+        $.each(employees, function (index, employee) {
+            strResult += "<tr><td>" + employee.Id + "</td><td> " + employee.Name + "</td><td>" + employee.Category + "</td><td>" + employee.Price + "</td></tr>";
+        });
+        strResult += "</table>";
+        $("#divResult").html(strResult);
+    }
+
+    function ShowProduct(product) {
+        if (product != null) {
+            var strResult = "<table><th> ID</th><th> Name</th><th> Category</th><th>Price</th>";
+            strResult += "<tr><td>" + product.Id + "</td><td> " + product.Name + "</td><td>" + product.Category + "</td><td>" + product.Price + "</td></tr>";
+            strResult += "</table>";
+            $("#divResult").html(strResult);
+        }
+        else {
+            $("#divResult").html("No Results To Display");
+        }
+    }
+
+    function GetProduct() {
+        jQuery.support.cors = true;
+        var id = $('#txtProId').val();
+        $.ajax({
+            url: 'http://localhost:49958/api/Products/' + id,
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                ShowProduct(data);
+            },
+            error: function (x, y, z) {
+                alert(x + '\n' + y + '\n' + z);
+                $("#divResult").html(' ');
+            }
+        });
+    }
+</script>
+
+
+
+<section class="featured">
+    <div class="content-wrapper">
+        <hgroup class="title">
+             Operations on Product via Web API 
+            @*<h1>@ViewBag.Title.</h1>*@
+            @*<h2>@ViewBag.Message</h2>*@
+        </hgroup>
+        <div style="align-content:center">
+            <table>
+                <tr>
+                    <td align="center">
+                        Get All Products
+                        <div>
+                            <button onclick="GetAllProducts(); return false;">Get All Products</button>
+                        </div>
+                    </td>
+                    <td>
+                        Get Product By ID
+                        <div>
+                            Enter Product Id: <input type="text" id="txtProId" style="width:50PX; height:22px; font-size:8pt;" /><br />
+                            <button onclick="GetProduct(); return false;" style="margin-top:10px;">Get Product</button>
+                        </div>
+                    </td>
+                    <td>
+                        Add new product
+                        <div>
+                            <table>
+                                <tr><td>Product Id:</td><td><input type="text" id="txtaddProid" style="width:125px; height:22px; font-size:8pt;" /></td></tr>
+                                <tr>  <td>Name:</td><td><input type="text" id="txtaddProdName" style="width:125px; height:22px; font-size:8pt;" /></td></tr>
+                                <tr> <td>Category:</td><td><input type="text" id="txtaddProdCat" style="width:125px; height:22px; font-size:8pt;" /></td></tr>
+                                <tr><td>Price:</td><td><input type="text" id="txtaddProdPrice" style="width:125px; height:22px; font-size:8pt;" /></td></tr>
+                            </table><br />
+                            <button onclick="AddProduct(); return false;">Add Product</button>
+                        </div>
+
+
+                    </td>
+                    <td>
+                        Delete Product
+                        <div>
+                            Enter Product Id : <input type="text" id="txtdelEmpId" style="width:50PX; height:22px; font-size:8pt;" /><br />
+                            <button onclick="DeleteProduct(); return false;" style="margin-top:10px;">Delete Product</button>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            <h3>Output through WEB API:</h3>
+            <div id="divResult"></div>
+        </div>
+    </div>
+</section>
+
+
+
